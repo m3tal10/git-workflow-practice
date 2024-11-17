@@ -21,9 +21,10 @@ class UserManager(BaseUserManager):
         return super_user
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Custome user model that supports using email instead of username"""
+    """Custom user model that supports using email instead of username"""
     email= models.EmailField(max_length=255, unique=True)
     name= models.CharField(max_length=255)
+    created_at= models.DateTimeField(auto_now_add=True)
     is_active= models.BooleanField(default=True)
     is_staff= models.BooleanField(default=False)
 
