@@ -6,6 +6,7 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse('user:create_user')
 TOKEN_URL = reverse('user:token')
+ME_URL= reverse('user:me')
 
 def create_user(**kwargs):
     return get_user_model().objects.create_user(**kwargs)
@@ -84,3 +85,18 @@ class PublicUserApiTests(TestCase):
         res= self.client.post(TOKEN_URL,payload)
         self.assertNotIn('token',res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+class PrivateUserApiTest(TestCase):
+    """Tests the user API private. Authentication needed."""
+    def setUp(self) -> None:
+        self.user= create_user(
+            email='test@gmail.com',
+            password='pass1234',
+            name='test'
+        )
+        self.client= APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        res= self.client.get(ME_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
